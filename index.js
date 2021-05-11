@@ -8,7 +8,7 @@ app.use(bodyParser.json());
 app.use(express.static("public"));
 
 // global vars
-const port = process.env.PORT || 3000;
+const port = process.env.LOCAL_PORT || 3000;
 const accountId = process.env.BW_ACCOUNT_ID;
 const username = process.env.BW_USERNAME;
 const password = process.env.BW_PASSWORD;

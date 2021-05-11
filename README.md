@@ -33,6 +33,7 @@ The sample app uses the below environmental variables.
 BW_ACCOUNT_ID                        # Your Bandwidth Account Id
 BW_USERNAME                          # Your Bandwidth API Username
 BW_PASSWORD                          # Your Bandwidth API Password
+LOCAL_PORT                           # HTTP Port, defaults to 3000
 ```
 
 # Running the Application
