@@ -22,9 +22,7 @@ A simple 1:1 WebRTC video application.
 
 # Pre-Requisites
 
-In order to use the Bandwidth API, users need to set up the appropriate application in their [Bandwidth Dashboard](https://dashboard.bandwidth.com/) and create [API credentials](https://dev.bandwidth.com/guides/accountCredentials.html#top). WebRTC must be enabled for your account to run this sample. Please check with your account manager to ensure you are provisioned for WebRTC.
-
-To create an application, log into the [Bandwidth Dashboard](https://dashboard.bandwidth.com/) and navigate to the `Applications` tab.  Fill out the **New Application** form, selecting the service (Messaging or Voice) that the application will be used for.  All Bandwidth services require publicly accessible Callback URLs. For more information on how to set one up see [Callback URLs](#callback-urls).
+In order to use the Bandwidth API, users need to set up [API credentials](https://dev.bandwidth.com/guides/accountCredentials.html#top). WebRTC must be enabled for your account to run this sample. Please check with your account manager to ensure you are provisioned for WebRTC.
 
 For more information about API credentials see [here](https://dev.bandwidth.com/guides/accountCredentials.html#top).
 
@@ -45,3 +43,7 @@ Use the following commands to run the application:
 npm install
 node index.js
 ```
+
+## Communicate!
+
+Browse to [http://localhost:3000](http://localhost:3000) 

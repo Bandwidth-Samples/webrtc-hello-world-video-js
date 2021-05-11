@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="main.css" rel="stylesheet" />
 <!-- we recommend hosting this yourself, github is not always the best CDN -->
-<script src="https://github.com/Bandwidth/webrtc-browser/releases/download/0.5.2/BandwidthRtc.bundle.js"></script>
+<script src="https://github.com/Bandwidth/webrtc-browser/releases/download/0.9.1/BandwidthRtc.bundle.js"></script>
 <!-- <script src="main.js"></script> -->
 
 <div class="outer">
@@ -13,8 +13,8 @@
 
 <script>
     const bandwidthRtc = new BandwidthRtc();
-    var myStream;
-    var remoteStreams = [];
+    var localRtcStream;
+    var remoteRtcStreams = new Map();
 
     async function startLocalVideo(video_id){
         try {
@@ -43,9 +43,8 @@
         }
 
         await bandwidthRtc.connect({ deviceToken: jsonResp.token });
-        
-        streamResp = await bandwidthRtc.publish({audio: true, video: true});
-        myStream = streamResp.mediaStream;
+
+        localRtcStream = await bandwidthRtc.publish({audio: true, video: true});
 
         // make the button allow you to leave
         document.getElementById("button").setAttribute( "onClick","leave()");
@@ -54,25 +53,17 @@
 
     async function leave(){
         console.log(`Leaving call`)
-        await bandwidthRtc.unpublish(myStream.endpointId);
+        await bandwidthRtc.unpublish(localRtcStream);
         bandwidthRtc.disconnect();
 
-        // // stop the local tracks
-        // var tracks = myStream.getTracks();
-        //     tracks.forEach(function (track) {
-        //     console.log(`stopping stream`);
-        //     console.log(track);
-        //     track.stop();
-        // });
-        // myStream = null;
-
         // disconnect other streams
-        remoteStreams.forEach(function (stream){
+        remoteRtcStreams.forEach(function (stream){
             console.log(`attempting to remove ${stream.endpointId}`);
             el = document.getElementById(stream.endpointId);
             if(el)
                 el.remove();
         });
+        remoteRtcStreams.clear();
 
         // make the button allow you to rejoin
         document.getElementById("button").setAttribute( "onClick","join()");
@@ -85,7 +76,7 @@
             // sometimes you get notified twice
             if(document.getElementById(rtcStream.endpointId)) return;
             try{
-                remoteStreams.push(rtcStream)
+                remoteRtcStreams.set(rtcStream.endpointId, rtcStream);
                 var mediaEl = document.createElement("video");
                 mediaEl.id = rtcStream.endpointId;
                 mediaEl.autoplay = true;
@@ -101,6 +92,7 @@
             console.log(`disconnecting connection: ${endpointId}`)
             if(!document.getElementById(endpointId)) return;
             document.getElementById(endpointId).remove();
+            remoteRtcStreams.delete(endpointId);
         });
     });
 

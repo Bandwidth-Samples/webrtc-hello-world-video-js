@@ -8,8 +8,18 @@ app.use(bodyParser.json());
 app.use(express.static("public"));
 
 // global vars
-const port = process.env.LOCAL_PORT;
+const port = process.env.PORT || 3000;
 const accountId = process.env.BW_ACCOUNT_ID;
+const username = process.env.BW_USERNAME;
+const password = process.env.BW_PASSWORD;
+
+// Check to make sure required environment variables are set
+if (!accountId || !username || !password) {
+  console.error(
+      "ERROR! Please set the BW_ACCOUNT_ID, BW_USERNAME, and BW_PASSWORD environment variables before running this app"
+  );
+  process.exit(1);
+}
 
 BandwidthWebRTC.Configuration.basicAuthUserName = process.env.BW_USERNAME;
 BandwidthWebRTC.Configuration.basicAuthPassword = process.env.BW_PASSWORD;
@@ -39,6 +49,7 @@ app.get("/joinCall", async (req, res) => {
     // setup the session and add this user into it
     var participantBody = new BandwidthWebRTC.Participant({
       publishPermissions: ["AUDIO", "VIDEO"],
+      deviceApiVersion: "V3"
     });
 
     var participantResponse = await webRTCController.createParticipant(
@@ -71,7 +82,7 @@ app.get("/joinCall", async (req, res) => {
   //  we can send back the token they need to join
   //  as well as info about the room they are in
   res.send({
-    message: "created particpant and setup session",
+    message: "created participant and setup session",
     token: participantResponse.token,
   });
 });
