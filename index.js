@@ -21,9 +21,12 @@ if (!accountId || !username || !password) {
   process.exit(1);
 }
 
-BandwidthWebRTC.Configuration.basicAuthUserName = process.env.BW_USERNAME;
-BandwidthWebRTC.Configuration.basicAuthPassword = process.env.BW_PASSWORD;
-var webRTCController = BandwidthWebRTC.APIController;
+const {Client: WebRTCClient, ApiController: WebRTCController} = BandwidthWebRTC;
+const webrtcClient = new WebRTCClient({
+  basicAuthUserName: username,
+  basicAuthPassword: password
+});
+const webRTCController = new WebRTCController(webrtcClient);
 
 // track the session Ids
 var sessions = new Map();
@@ -37,39 +40,35 @@ app.get("/joinCall", async (req, res) => {
     if (sessions.has(sessionName)) {
       sessionId = sessions.get(sessionName);
     } else {
-      let sessionBody = new BandwidthWebRTC.Session({ tag: `demo` });
+      let sessionBody = { tag: `demo` };
       let sessionResponse = await webRTCController.createSession(
         accountId,
         sessionBody
       );
-      sessionId = sessionResponse.id;
+      sessionId = sessionResponse.result.id;
       sessions.set(sessionName, sessionId);
     }
 
     // setup the session and add this user into it
-    var participantBody = new BandwidthWebRTC.Participant({
-      publishPermissions: ["AUDIO", "VIDEO"],
+    const participantBody = {
+      publishPermissions: ["AUDIO"],
       deviceApiVersion: "V3"
-    });
+    };
 
     var participantResponse = await webRTCController.createParticipant(
       accountId,
       participantBody
     );
-
-    // return [createResponse.participant, participantResponse.token];
-
-    var subscribeBody = new BandwidthWebRTC.Subscriptions({
-      sessionId: sessionId,
-    });
+    
+    const subscribeBody = {sessionId: sessionId};
 
     console.log(
-      `params: s:${sessionId}, p:${participantResponse.participant.id}`
+      `params: s:${sessionId}, p:${participantResponse.result.participant.id}`
     );
     await webRTCController.addParticipantToSession(
       accountId,
       sessionId,
-      participantResponse.participant.id,
+      participantResponse.result.participant.id,
       subscribeBody
     );
   } catch (error) {
@@ -83,7 +82,7 @@ app.get("/joinCall", async (req, res) => {
   //  as well as info about the room they are in
   res.send({
     message: "created participant and setup session",
-    token: participantResponse.token,
+    token: participantResponse.result.token,
   });
 });
 
