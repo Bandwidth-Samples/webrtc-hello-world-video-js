@@ -11,9 +11,9 @@
   "license": "MIT",
   "dependencies": {
     "@bandwidth/webrtc": "^1.3.2",
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.20.2",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "nodemon": "^2.0.6"
+    "express": "^4.18.3",
+    "nodemon": "^2.0.22"
   }
 }
